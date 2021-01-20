@@ -1,7 +1,7 @@
 # Bring up the test network
 
 [![Open this project in Cloud
-Shell](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/incubate-co-th/fabric-course.git&page=editor&tutorial=prerequisites.md)
+Shell](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/incubate-co-th/fabric-course.git&page=editor&tutorial=bring_up_the_test_network.md)
 
 This tutorial follow https://hyperledger-fabric.readthedocs.io/en/release-2.3/test_network.html
 
