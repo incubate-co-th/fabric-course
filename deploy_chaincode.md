@@ -1,4 +1,4 @@
-# Chaincode Deployment and Interaction
+# Deploying a smart contract to a channel
 [![Open this project in Cloud
 Shell](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/incubate-co-th/fabric-course.git&page=editor&tutorial=deploy_chaincode.md)
 
