@@ -25,7 +25,7 @@ cd fabric-samples/test-network
 ## Starting a chaincode on the channel
 After you have used the network.sh to create a channel, you can start a chaincode on the channel using the following command:
 ```bash
-./network.sh deployCC -ccl javascript
+./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-javascript -ccl javascript
 ```
 
 The deployCC subcommand will install the **asset-transfer (basic)** chaincode on `peer0.org1.example.com` and `peer0.org2.example.com` and then deploy the chaincode on the channel specified using the channel flag (or `mychannel` if no channel is specified). If you are deploying a chaincode for the first time, the script will install the chaincode dependencies. By default, The script installs the Go version of the asset-transfer (basic) chaincode. However, you can use the language flag, `-l`, to install the typescript or javascript versions of the chaincode. You can find the asset-transfer (basic) chaincode in the `asset-transfer-basic` folder of the fabric-samples directory. This folder contains sample chaincode that are provided as examples and used by tutorials to highlight Fabric features.
