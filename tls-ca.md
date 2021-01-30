@@ -29,18 +29,6 @@ The -b (bootstrap identity) option is required for initialization when LDAP is d
 
 The -H(, --home string) option is for set server's home directory (default "/etc/hyperledger/fabric-ca-server")
 
-### Then look at folder ca-server you will see:
-- `ca-cert.pem` :  The TLS CA root signed certificate file with [Private Exchange Mail](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) format contains a base64 translation of the x509 ASN certificate
-- `fabric-ca-server-config.yaml` : configuration file for fabric CA server 
-- `fabric-ca-server.db` : SQLite database file for fabric CA server. Have to be changed into PostgreSQL or MySQL for clustered CA.
-- `IssuerPublicKey` :  
-- `IssuerRevocationPublicKey`:  
-- `msp` : folder contains `keystore` folder
-  - `keystore` : folder contains private keys
-    - `a96ee445f6115d84091796e95a4ddcf13f3947f74c4d7e8e7426cac3f24b8062_sk`
-    - `IssuerRevocationPrivateKey` : base64 private key
-    - `IssuerSecretKey` : private key
-
 ## Step 2: Modify the CA server configuration
 
 Edit the `fabric-ca-server-config.yaml` in `fabric-ca-server-tls` folder.
@@ -92,14 +80,13 @@ sudo rm -rf Organizations/org1/fabric-ca-server-tls/msp
 ## Step 4: Start the CA server
 Run the command below to start CA in docker containner in new cloudshell:
 ```bash
-docker run --rm -p 7054:7054 --name fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-tls:/root/fabric-ca-server-tls hyperledger/fabric-ca:amd64-1.4.9  fabric-ca-server start -b tls-admin:tls-adminpw -H /root/fabric-ca-server-tls
+docker run --rm -p 7054:7054 --name fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-tls:/root/fabric-ca-server-tls hyperledger/fabric-ca:1.4.9  fabric-ca-server start -b tls-admin:tls-adminpw -H /root/fabric-ca-server-tls
 ```
 
 ## Step 5: Enroll bootstrap user with TLS CA 
 
 ### Create folder for CA client
 ```bash
-sudo 
 mkdir Organizations/org1/fabric-ca-client
 mkdir Organizations/org1/fabric-ca-client/tls-ca
 mkdir Organizations/org1/fabric-ca-client/tls-root-cert
@@ -112,7 +99,7 @@ cp Organizations/org1/fabric-ca-server-tls/ca-cert.pem Organizations/org1/fabric
 ### Set environment variable FABRIC_CA_CLIENT_HOME for docker and enroll admin user
 
 ```bash
-docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-client enroll -d -u https://tls-admin:tls-adminpw@fabric-ca-server-tls.org1:7054 --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --csr.hosts 'host1,fabric-ca-server-tls.org1' --mspdir tls-ca/tlsadmin/msp
+docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:1.4.9 fabric-ca-client enroll -d -u https://tls-admin:tls-adminpw@fabric-ca-server-tls.org1:7054 --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --csr.hosts 'host1,fabric-ca-server-tls.org1' --mspdir tls-ca/tlsadmin/msp
 ```
 
 When this command completes successfully, the fabric-ca-client/tls-ca/tlsadmin/msp folder is generated and contains the signed cert and private key for the TLS CA admin identity. If the enroll command fails for some reason, to avoid confusion later, please remove the generated private key from the fabric-ca-client/tls-ca/admin/msp/keystore folder before reattempting the enroll command.
@@ -126,7 +113,7 @@ When this command completes successfully, the fabric-ca-client/tls-ca/tlsadmin/m
 The TLS CA server was started with a bootstrap identity which has full admin privileges for the server. One of the key abilities of the admin is the ability to register new identities. Each node in the organization that transacts on the network needs to register with the TLS CA. Therefore, before we set up the organization CA, we need to use the TLS CA to register and enroll the organization CA bootstrap identity to get its TLS certificate and private key. The following command registers the organization CA bootstrap identity rcaadmin and rcaadminpw with the TLS CA.
 
 ```bash
-docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-client register -d --id.name rcaadmin --id.secret rcaadminpw -u https://fabric-ca-server-tls.org1:7054  --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tls-ca/tlsadmin/msp
+docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:1.4.9 fabric-ca-client register -d --id.name rcaadmin --id.secret rcaadminpw -u https://fabric-ca-server-tls.org1:7054  --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tls-ca/tlsadmin/msp
 ```
 
 Notice that the --mspdir flag on the command points to the location of TLS CA admin msp certificates that we generated in the previous step. This crypto material is required to be able to register other users with the TLS CA.
@@ -134,7 +121,7 @@ Notice that the --mspdir flag on the command points to the location of TLS CA ad
 Next, we need to enroll the rcaadmin user to generate the TLS certificates for the identity. In this case, we use the --mspdir flag on the enroll command to designate where the generated organization CA TLS certificates should be stored for the rcaadmin user. Because these certificates are for a different identity, it is a best practice to put them in their own folder. Therefore, instead of generating them in the default msp folder, we will put them in a new folder named rcaadmin that resides along side the tlsadmin folder.
 
 ```bash
-docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-client enroll -d -u https://rcaadmin:rcaadminpw@fabric-ca-server-tls.org1:7054 --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --csr.hosts 'host1,*.example.com' --mspdir tls-ca/rcaadmin/msp
+docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-tls.org1:fabric-ca-server-tls.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:1.4.9 fabric-ca-client enroll -d -u https://rcaadmin:rcaadminpw@fabric-ca-server-tls.org1:7054 --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --csr.hosts 'host1,*.example.com' --mspdir tls-ca/rcaadmin/msp
 ```
 
 In this case, the --mspdir flag works a little differently. For the enroll command, the --mspdir flag indicates where to store the generated certificates for the rcaadmin identity.
