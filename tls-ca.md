@@ -50,7 +50,7 @@ or <walkthrough-editor-open-file filePath="Organizations/org1/fabric-ca-server-t
 **`ca.name`** - Give the CA a name by editing the parameter, for example `org1-tls-ca`.
 
 ### CSR Hosts
-**`csr.hosts`** - Update this parameter to include this hostname and ip address where this server is running, if it is different than what is already in this file.
+**`csr.hosts`** - Update this parameter to include this hostname and ip address where this server is running, and `fabric-ca-server-tls.org1` for the docker hostname,if it is different than what is already in this file.
 
 ### Singing Profiles
 **`signing.profiles.ca`** - Since this is a TLS CA that will not issue CA certificates, the ca profiles section can be removed. The `signing.profiles` block should only contain tls profile.
