@@ -3,8 +3,6 @@
 [![Open this project in Cloud
 Shell](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/incubate-co-th/fabric-course.git&page=editor&tutorial=secured_transfer.md)
 
-Channels are a private layer of communication between specific network members.
-
 This tutorial follow the [Secured asset transfer in Fabric](https://hyperledger-fabric.readthedocs.io/en/release-2.3/secured_asset_transfer/secured_private_asset_transfer_tutorial.html) in Hyperledger Fabric document.
 
 ## Before you begin
