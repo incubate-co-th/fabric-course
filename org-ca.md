@@ -100,7 +100,7 @@ sudo rm -rf Organizations/org1/fabric-ca-server-org/msp
 Run the command below to start CA in docker containner in new cloudshell:
 
 ```bash
-docker run --rm -p 7055:7055 --name fabric-ca-server-org.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-org:/root/fabric-ca-server-org hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-server start -H /root/fabric-ca-server-org
+docker run --rm -p 7055:7055 --name fabric-ca-server-org.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-org:/root/fabric-ca-server-org hyperledger/fabric-ca:1.4.9 fabric-ca-server start -H /root/fabric-ca-server-org
 ```
 
 ## Step 5: Enroll the CA admin
@@ -120,7 +120,7 @@ cp Organizations/org1/fabric-ca-server-org/ca-cert.pem Organizations/org1/fabric
 Now you can use the Fabric CA client to generate the CA admin certificate and private key. You need this certificate and private key to be able to issue identities using this CA. We use the --mspdir flag on the enroll command to designate where to store the generated certificates. Run the command:
 
 ```bash
-docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-org.org1:fabric-ca-server-org.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-client enroll -d -u https://rcaadmin:rcaadminpw@fabric-ca-server-org.org1:7055 --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts 'host1,*.fabric-ca-server-org.org1' --mspdir org1-ca/rcaadmin/msp
+docker run --rm --name fabric-ca-client.org1 --link fabric-ca-server-org.org1:fabric-ca-server-org.org1 -v ${PWD}/Organizations/org1/fabric-ca-client:/root/fabric-ca-client -e FABRIC_CA_CLIENT_HOME=/root/fabric-ca-client  hyperledger/fabric-ca:1.4.9 fabric-ca-client enroll -d -u https://rcaadmin:rcaadminpw@fabric-ca-server-org.org1:7055 --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts 'host1,*.fabric-ca-server-org.org1' --mspdir org1-ca/rcaadmin/msp
 ```
 
 When this command runs, the enroll command creates the fabric-ca-client/org1-ca/rcaadmin/msp folder and contains the signed cert and private key for the organization CA.
