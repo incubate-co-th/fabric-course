@@ -39,7 +39,7 @@ The resulting folder structure is similar to the following diagram.
 ### Run the command to initialize the server
 
 ```bash
-docker run --rm --name fabric-ca-server-org-init.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-org:/root/fabric-ca-server-org hyperledger/fabric-ca:amd64-1.4.9 fabric-ca-server init -b rcaadmin:rcaadminpw -H /root/fabric-ca-server-org
+docker run --rm --name fabric-ca-server-org-init.org1 -v ${PWD}/Organizations/org1/fabric-ca-server-org:/root/fabric-ca-server-org hyperledger/fabric-ca:1.4.9 fabric-ca-server init -b rcaadmin:rcaadminpw -H /root/fabric-ca-server-org
 ```
 
 The -b (bootstrap identity) option is required for initialization when LDAP is disabled. At least one bootstrap identity is required to start the Fabric CA server; this identity is the server administrator.
